@@ -68,8 +68,39 @@ app.post('/saveTrack', function(req, res){
 		}else{
 			data = {"Result":true, "Reason": 'Data save successfully.'};
 		}
+		res.setHeader('Content-Type', 'application/json');
+		res.send(JSON.stringify(data));
 	})
-	res.send('Thanks...')
+})
+
+app.get( '/getPasttracks', function( req, res ){
+	var data = {"Result": false, "Reason": 'Invalid request sent.', "data": []};
+	if( req.query.hid != '' && req.query.hid != undefined && req.query.hid != 'undefined' ){
+		var hid = req.query.hid;
+		var n = 7;
+		if( req.query.n != '' && req.query.n != undefined && req.query.n != 'undefined' ){
+			n = req.query.n;
+		}
+		var today = new Date();
+		var currentDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+		var lastDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+(today.getDate()-n);
+		console.log(currentDate);
+		console.log(lastDate);
+		connection.query( 'SELECT `date`,is_done FROM tracks WHERE is_active = 1 AND habbit_id = '+hid,function( error, results ){
+			if( error ){
+				data['Reason'] = 'Please try again.';
+			}else{
+				data['Result'] = true;
+				data['Reason'] = '';
+				data['data'] = results;
+			}
+			res.setHeader('Content-Type', 'application/json');
+			res.send( JSON.stringify( data ));
+		})
+	}else{
+		res.setHeader('Content-Type', 'application/json');
+		res.send( JSON.stringify( data ));
+	}
 })
 
 app.listen(3001, function () {
