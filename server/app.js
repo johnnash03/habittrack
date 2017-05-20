@@ -16,7 +16,11 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
- 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+}); 
 
 
 
@@ -51,9 +55,22 @@ app.get('/getHabbits', function (req, res) {
 
 app.post('/saveTrack', function(req, res){
 	console.log(req.body);
+	var habbit_id = req.body.habbit_id;
+	var isDone = req.body.is_done;
+	var isActive = req.body.is_active;
+	var comment = req.body.comment;
+	var save = {"habbit_id": habbit_id, "is_done": isDone, "is_active": isActive, "comment": comment };
+	var data = [];
+	connection.query( 'INSERT INTO tracks( habbit_id,is_done,is_active,comment ) VALUES ?', save,function(error,result ){
+		if( error ){
+			data = {"Result":false, "Reason": 'Please try again.'};
+		}else{
+			data = {"Result":true, "Reason": 'Data save successfully.'};
+		}
+	})
 	res.send('Thanks...')
 })
 
-app.listen(3000, function () {
+app.listen(3001, function () {
   console.log('Example app listening on port 3000!')
 })
