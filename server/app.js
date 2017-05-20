@@ -81,15 +81,17 @@ app.get( '/getPasttracks', function( req, res ){
 		if( req.query.n != '' && req.query.n != undefined && req.query.n != 'undefined' ){
 			n = req.query.n;
 		}
+		process.env.TZ = 'ASIA/KOLKATA';
 		var today = new Date();
 		var currentDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
 		var lastDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+(today.getDate()-n);
-		console.log(currentDate);
-		console.log(lastDate);
+		//console.log(currentDate);
+		//console.log(lastDate);
 		connection.query( 'SELECT `date`,is_done FROM tracks WHERE is_active = 1 AND habbit_id = '+hid,function( error, results ){
 			if( error ){
 				data['Reason'] = 'Please try again.';
 			}else{
+				console.log(results);
 				data['Result'] = true;
 				data['Reason'] = '';
 				data['data'] = results;
